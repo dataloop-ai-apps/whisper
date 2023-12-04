@@ -6,12 +6,13 @@ import os
 
 logger = logging.getLogger('WhisperAdapter')
 
+
 @dl.Package.decorators.module(description='Model Adapter for Whisper speech recognition model',
                               name='model-adapter',
                               init_inputs={'model_entity': dl.Model})
 class Whisper(dl.BaseModelAdapter):
 
-    def load(self,local_path, **kwargs):
+    def load(self, local_path, **kwargs):
 
         max_new_tokens = self.configuration.get('max_new_tokens', 128)
         chunk_length_s = self.configuration.get('chunk_length_s', 30)
@@ -20,7 +21,6 @@ class Whisper(dl.BaseModelAdapter):
 
         device = "cuda:0" if torch.cuda.is_available() else "cpu"
         torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-
 
         self.model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True
@@ -53,13 +53,13 @@ class Whisper(dl.BaseModelAdapter):
             logger.info(f'WhisperAdapter predicting {filename},  started')
             result = self.pipe(filename)
             logger.info(f'WhisperAdapter predicting {filename}, done')
-            annotations = self.convert_to_dtlpy(item,result)
+            annotations = self.convert_to_dtlpy(item, result)
             batch_annotations.append(annotations)
             os.remove(filename)
         logger.info('WhisperAdapter prediction done')
         return batch_annotations
 
-    def convert_to_dtlpy(self,item:dl.Item, result):
+    def convert_to_dtlpy(self, item: dl.Item, result):
         chunks = result['chunks']
         builder = item.annotations.builder()
         for chunk in chunks:
@@ -75,6 +75,7 @@ class Whisper(dl.BaseModelAdapter):
                         end_time=end)
 
         return builder
+
 
 def package_creation(project: dl.Project):
     metadata = dl.Package.get_ml_metadata(cls=Whisper,
@@ -105,6 +106,7 @@ def package_creation(project: dl.Project):
                                     metadata=metadata)
     return package
 
+
 def model_creation(package: dl.Package):
     model = package.models.create(model_name='openai-whisper',
                                   description='whisper arch, pretrained whisper-large-v3',
@@ -122,6 +124,7 @@ def model_creation(package: dl.Package):
                                   input_type='audio',
                                   output_type='subtitle')
     return model
+
 
 def deploy():
     project_name = '<enter your project name>'
