@@ -1,0 +1,4 @@
+dtlpy
+torch
+transformers
+accelerate
