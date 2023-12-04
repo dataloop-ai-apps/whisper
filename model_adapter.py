@@ -92,7 +92,7 @@ def package_creation(project: dl.Project):
                                     package_type='ml',
                                     modules=[modules],
                                     service_config={
-                                        'runtime': dl.KubernetesRuntime(pod_type=dl.INSTANCE_CATALOG_GPU_K80_M,
+                                        'runtime': dl.KubernetesRuntime(pod_type=dl.INSTANCE_CATALOG_REGULAR_L,
                                                                         runner_image='dataloopai/whisper-gpu.cuda.11.5.py3.8.pytorch2:1.0.1',
                                                                         autoscaler=dl.KubernetesRabbitmqAutoscaler(
                                                                             min_replicas=0,
